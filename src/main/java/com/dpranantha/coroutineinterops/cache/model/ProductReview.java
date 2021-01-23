@@ -1,14 +1,20 @@
-package com.dpranantha.coroutineinterops.model;
+package com.dpranantha.coroutineinterops.cache.model;
 
-public class Review {
+public class ProductReview {
+    private final String reviewId;
     private final String reviewerName;
     private final String reviewNote;
     private final Integer star;
 
-    public Review(String reviewerName, String reviewNote, Integer star) {
+    public ProductReview(String reviewId, String reviewerName, String reviewNote, Integer star) {
+        this.reviewId = reviewId;
         this.reviewerName = reviewerName;
         this.reviewNote = reviewNote;
         this.star = star;
+    }
+
+    public String getReviewId() {
+        return reviewId;
     }
 
     public String getReviewerName() {

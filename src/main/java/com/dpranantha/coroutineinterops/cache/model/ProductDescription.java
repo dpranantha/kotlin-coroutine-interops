@@ -1,14 +1,20 @@
-package com.dpranantha.coroutineinterops.model;
+package com.dpranantha.coroutineinterops.cache.model;
 
-public class Description {
+public class ProductDescription {
+    private final String productId;
     private final String shortDescription;
     private final double weightInKg;
     private final String color;
 
-    public Description(String shortDescription, double weightInKg, String color) {
+    public ProductDescription(String productId, String shortDescription, double weightInKg, String color) {
+        this.productId = productId;
         this.shortDescription = shortDescription;
         this.weightInKg = weightInKg;
         this.color = color;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public String getShortDescription() {

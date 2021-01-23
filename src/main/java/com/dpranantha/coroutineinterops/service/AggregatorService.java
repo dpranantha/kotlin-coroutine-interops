@@ -1,29 +1,77 @@
 package com.dpranantha.coroutineinterops.service;
 
+import com.dpranantha.coroutineinterops.cache.model.ProductDescription;
+import com.dpranantha.coroutineinterops.cache.model.ProductReview;
+import com.dpranantha.coroutineinterops.cache.model.Seller;
 import com.dpranantha.coroutineinterops.controller.exception.ProductNotFoundException;
-import com.dpranantha.coroutineinterops.model.Product;
+import com.dpranantha.coroutineinterops.cache.model.ProductInfo;
+import com.dpranantha.coroutineinterops.model.ProductOfferAndSeller;
+import com.dpranantha.coroutineinterops.model.ProductSummary;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class AggregatorService {
-    private final ProductService productService;
-    private final DescriptionService descriptionService;
-    private final OfferService offerService;
+    private final ProductInfoService productInfoService;
+    private final ProductDescriptionService productDescriptionService;
+    private final ProductOfferService offerService;
     private final SellerService sellerService;
+    private final ProductReviewService reviewService;
 
     @Autowired
-    public AggregatorService(ProductService productService,
-                             DescriptionService descriptionService,
-                             OfferService offerService,
-                             SellerService sellerService) {
-        this.productService = productService;
-        this.descriptionService = descriptionService;
+    public AggregatorService(ProductInfoService productInfoService,
+                             ProductDescriptionService productDescriptionService,
+                             ProductOfferService offerService,
+                             SellerService sellerService,
+                             ProductReviewService reviewService) {
+        this.productInfoService = productInfoService;
+        this.productDescriptionService = productDescriptionService;
         this.offerService = offerService;
         this.sellerService = sellerService;
+        this.reviewService = reviewService;
     }
 
-    public Product getExtendedProductInfo(final String id) throws ProductNotFoundException {
-        return productService.getProductBasicInfo();
+    public ProductSummary getProductSummary(String productId) throws ProductNotFoundException {
+        final ProductInfo productInfo = productInfoService.getProductInfo(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product can't be found!"));
+        final Optional<ProductDescription> productDescription = productDescriptionService.getProductDescription(productId);
+        final List<ProductOfferAndSeller> productOfferAndSellers = getProductOfferAndSellers(productId);
+        final Pair<List<String>, Double> productReviews = getProductReviews(productId);
+        return new ProductSummary(productId,
+                productInfo.getProductName(),
+                productDescription.map(ProductDescription::getShortDescription).orElse(null),
+                productDescription.map(ProductDescription::getWeightInKg).orElse(null),
+                productDescription.map(ProductDescription::getColor).orElse(null),
+                productOfferAndSellers,
+                productReviews.getLeft(),
+                productReviews.getRight()
+        );
+    }
+
+    private List<ProductOfferAndSeller> getProductOfferAndSellers(String productId) {
+        return offerService.getProductOffers(productId).stream()
+                .map(productOffer -> {
+                    final Optional<Seller> seller = sellerService.getSeller(productOffer.getSellerId());
+                    return new ProductOfferAndSeller(productOffer.getPrice(), seller.map(Seller::getSellerName).orElse(null));
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Pair<List<String>, Double> getProductReviews(String productId) {
+        final List<ProductReview> reviews = reviewService.getReviews(productId);
+        final List<String> allReviews = new ArrayList<>();
+        double rating = 0.0;
+        for (ProductReview review: reviews) {
+            allReviews.add(review.getReviewNote());
+            rating += review.getStar();
+        }
+        if (reviews.size() != 0) rating = rating / reviews.size();
+        return Pair.of(allReviews, rating);
     }
 }
