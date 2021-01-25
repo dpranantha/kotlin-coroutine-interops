@@ -25,7 +25,7 @@ class CoroutineInteropsIT {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .time(greaterThan(800L), TimeUnit.MILLISECONDS)
+                .time(greaterThan(1200L), TimeUnit.MILLISECONDS)
                 .extract()
                 .body()
                 .as(ProductSummary.class);
