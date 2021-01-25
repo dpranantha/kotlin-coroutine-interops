@@ -33,7 +33,7 @@ public class CacheLoader {
         if (cache != null) {
             IntStream.range(0, 10).forEach(i -> {
                 final String id = Integer.toString(i + 1);
-                cache.put(id, new ProductInfo(id, String.format("Product %s", id)));
+                cache.put(id, new ProductCatalogue(id, String.format("Product %s", id)));
             });
         } else {
             throw new RuntimeException("BasicProduct cache should be initialized");

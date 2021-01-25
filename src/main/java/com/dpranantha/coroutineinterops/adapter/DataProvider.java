@@ -5,7 +5,7 @@ import com.dpranantha.coroutineinterops.cache.model.*;
 import java.util.Optional;
 
 public interface DataProvider {
-    Optional<ProductInfo> getProductInfo(String productId);
+    Optional<ProductCatalogue> getProductCatalogue(String productId);
     Optional<ProductDescription> getProductDescription(String productId);
     Optional<ProductOffers> getProductOffer(String productId);
     Optional<ProductReviews> getProductReviews(String productId);

@@ -27,14 +27,14 @@ public class CacheDataProvider implements DataProvider {
     }
 
     @Override
-    public Optional<ProductInfo> getProductInfo(String productId) {
-        logger.debug("Get product info from service for productId: {}", productId);
+    public Optional<ProductCatalogue> getProductCatalogue(String productId) {
+        logger.debug("Get product catalogue from service for productId: {}", productId);
         try {
             TimeUnit.MILLISECONDS.sleep(DELAY);
             return getValueFromCache("BasicProduct", productId)
-                    .map(value -> (ProductInfo) value);
+                    .map(value -> (ProductCatalogue) value);
         } catch (InterruptedException ie) {
-            logger.error("Get product info from service for productId {} failed {}", productId, ie.getCause().getLocalizedMessage());
+            logger.error("Get product catalogue from service for productId {} failed {}", productId, ie.getCause().getLocalizedMessage());
             return Optional.empty();
         }
     }
