@@ -5,14 +5,12 @@ import com.dpranantha.coroutineinterops.model.ProductOfferAndSeller;
 import com.dpranantha.coroutineinterops.model.ProductSummary;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;

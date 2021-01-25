@@ -4,7 +4,7 @@ import com.dpranantha.coroutineinterops.cache.model.ProductDescription;
 import com.dpranantha.coroutineinterops.cache.model.ProductReview;
 import com.dpranantha.coroutineinterops.cache.model.Seller;
 import com.dpranantha.coroutineinterops.controller.exception.ProductNotFoundException;
-import com.dpranantha.coroutineinterops.cache.model.ProductCatalogue;
+import com.dpranantha.coroutineinterops.cache.model.ProductCatalog;
 import com.dpranantha.coroutineinterops.model.ProductOfferAndSeller;
 import com.dpranantha.coroutineinterops.model.ProductSummary;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,19 +18,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class AggregatorService {
-    private final ProductCatalogueService productCatalogueService;
+    private final ProductCatalogService productCatalogService;
     private final ProductDescriptionService productDescriptionService;
     private final ProductOfferService offerService;
     private final SellerService sellerService;
     private final ProductReviewService reviewService;
 
     @Autowired
-    public AggregatorService(ProductCatalogueService productCatalogueService,
+    public AggregatorService(ProductCatalogService productCatalogService,
                              ProductDescriptionService productDescriptionService,
                              ProductOfferService offerService,
                              SellerService sellerService,
                              ProductReviewService reviewService) {
-        this.productCatalogueService = productCatalogueService;
+        this.productCatalogService = productCatalogService;
         this.productDescriptionService = productDescriptionService;
         this.offerService = offerService;
         this.sellerService = sellerService;
@@ -38,13 +38,13 @@ public class AggregatorService {
     }
 
     public ProductSummary getProductSummary(String productId) throws ProductNotFoundException {
-        final ProductCatalogue productCatalogue = productCatalogueService.getProductInfo(productId)
+        final ProductCatalog productCatalog = productCatalogService.getProductCatalog(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product can't be found!"));
         final Optional<ProductDescription> productDescription = productDescriptionService.getProductDescription(productId);
         final List<ProductOfferAndSeller> productOfferAndSellers = getProductOfferAndSellers(productId);
         final Pair<List<String>, Double> productReviews = getProductReviews(productId);
         return new ProductSummary(productId,
-                productCatalogue.getProductName(),
+                productCatalog.getProductName(),
                 productDescription.map(ProductDescription::getShortDescription).orElse(null),
                 productDescription.map(ProductDescription::getWeightInKg).orElse(null),
                 productDescription.map(ProductDescription::getColor).orElse(null),

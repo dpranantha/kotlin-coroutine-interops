@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 @RunWith(MockitoJUnitRunner.class)
 public class AggregatorServiceTests {
     @Mock
-    private ProductCatalogueService mockProductCatalogueService;
+    private ProductCatalogService mockProductCatalogService;
     @Mock
     private ProductDescriptionService mockProductDescriptionService;
     @Mock
@@ -35,7 +35,7 @@ public class AggregatorServiceTests {
     @Before
     public void setup(){
         aggregatorService = new AggregatorService(
-                mockProductCatalogueService,
+                mockProductCatalogService,
                 mockProductDescriptionService,
                 mockOfferService,
                 mockSellerService,
@@ -45,8 +45,8 @@ public class AggregatorServiceTests {
 
     @Test
     public void givenAllValidData_ThenReturnsProductSummary() throws ProductNotFoundException {
-        Mockito.when(mockProductCatalogueService.getProductInfo(anyString()))
-                .thenReturn(Optional.of(new ProductCatalogue("1", "razor x1")));
+        Mockito.when(mockProductCatalogService.getProductCatalog(anyString()))
+                .thenReturn(Optional.of(new ProductCatalog("1", "razor x1")));
         Mockito.when(mockProductDescriptionService.getProductDescription(anyString()))
                 .thenReturn(Optional.of(new ProductDescription("1", "this is a razor x1", 1.5, "silver")));
         Mockito.when(mockOfferService.getProductOffers(anyString()))
@@ -77,16 +77,16 @@ public class AggregatorServiceTests {
 
     @Test(expected = ProductNotFoundException.class)
     public void givenNotFoundProduct_ThrowsException() throws ProductNotFoundException {
-        Mockito.when(mockProductCatalogueService.getProductInfo(anyString()))
+        Mockito.when(mockProductCatalogService.getProductCatalog(anyString()))
                 .thenReturn(Optional.empty());
 
         aggregatorService.getProductSummary("1");
     }
 
     @Test
-    public void givenOnlyValidProductInfoAndOfferPriceData_ThenReturnsProductSummary() throws ProductNotFoundException {
-        Mockito.when(mockProductCatalogueService.getProductInfo(anyString()))
-                .thenReturn(Optional.of(new ProductCatalogue("1", "razor x1")));
+    public void givenOnlyValidProductCatalogAndOfferPriceData_ThenReturnsProductSummary() throws ProductNotFoundException {
+        Mockito.when(mockProductCatalogService.getProductCatalog(anyString()))
+                .thenReturn(Optional.of(new ProductCatalog("1", "razor x1")));
         Mockito.when(mockProductDescriptionService.getProductDescription(anyString()))
                 .thenReturn(Optional.empty());
         Mockito.when(mockOfferService.getProductOffers(anyString()))
