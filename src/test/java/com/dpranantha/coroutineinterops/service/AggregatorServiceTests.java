@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -29,6 +28,8 @@ public class AggregatorServiceTests {
     private SellerService mockSellerService;
     @Mock
     private ProductReviewService mockReviewService;
+    @Mock
+    private ProductDescriptionServiceKt mockProductDescriptionServiceKt;
 
     private AggregatorService aggregatorService;
 
@@ -39,8 +40,9 @@ public class AggregatorServiceTests {
                 mockProductDescriptionService,
                 mockOfferService,
                 mockSellerService,
-                mockReviewService
-        );
+                mockReviewService,
+                mockProductDescriptionServiceKt,
+                false);
     }
 
     @Test
