@@ -23,9 +23,10 @@ class CoroutineInteropsIT {
     void testExistsProduct_thenReceived_200_Response() {
         final ProductSummary productSummary = when().request("GET", "/v1/products/1")
                 .then()
+                .time(greaterThan(1600L), TimeUnit.MILLISECONDS)  //6 call x 200ms + with overhead >= 300ms
+                .time(lessThan(1800L), TimeUnit.MILLISECONDS)
                 .assertThat()
                 .statusCode(200)
-                .time(greaterThan(1200L), TimeUnit.MILLISECONDS)
                 .extract()
                 .body()
                 .as(ProductSummary.class);
@@ -50,11 +51,11 @@ class CoroutineInteropsIT {
     void testNotExistsProduct_thenReceived_404_Response() {
         when().request("GET", "/v1/products/1100")
                 .then()
+                .time(greaterThan(200L), TimeUnit.MILLISECONDS)
+                .time(lessThan(300L), TimeUnit.MILLISECONDS)
                 .assertThat()
                 .statusCode(404)
                 .body("message", equalTo("Product can't be found!"))
-                .body("errorCode", equalTo(404))
-                .time(greaterThan(200L), TimeUnit.MILLISECONDS)
-                .time(lessThan(300L), TimeUnit.MILLISECONDS);
+                .body("errorCode", equalTo(404));
     }
 }
