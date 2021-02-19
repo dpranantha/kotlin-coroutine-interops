@@ -29,7 +29,15 @@ public class AggregatorServiceTests {
     @Mock
     private ProductReviewService mockReviewService;
     @Mock
+    private ProductCatalogServiceKt mockProductCatalogServiceKt;
+    @Mock
     private ProductDescriptionServiceKt mockProductDescriptionServiceKt;
+    @Mock
+    private ProductOfferServiceKt mockOfferServiceKt;
+    @Mock
+    private SellerServiceKt mockSellerServiceKt;
+    @Mock
+    private ProductReviewServiceKt mockReviewServiceKt;
 
     private AggregatorService aggregatorService;
 
@@ -41,7 +49,11 @@ public class AggregatorServiceTests {
                 mockOfferService,
                 mockSellerService,
                 mockReviewService,
+                mockProductCatalogServiceKt,
                 mockProductDescriptionServiceKt,
+                mockOfferServiceKt,
+                mockSellerServiceKt,
+                mockReviewServiceKt,
                 false);
     }
 

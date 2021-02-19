@@ -21,7 +21,11 @@ class AggregatorServiceKtTests {
     private val mockOfferService: ProductOfferService = mockk()
     private val mockSellerService: SellerService = mockk()
     private val mockReviewService: ProductReviewService = mockk()
+    private val mockProductCatalogServiceKt: ProductCatalogServiceKt = mockk()
     private val mockProductDescriptionServiceKt: ProductDescriptionServiceKt = mockk()
+    private val mockOfferServiceKt: ProductOfferServiceKt = mockk()
+    private val mockSellerServiceKt: SellerServiceKt = mockk()
+    private val mockReviewServiceKt: ProductReviewServiceKt = mockk()
 
     private lateinit var aggregatorService: AggregatorService
 
@@ -33,7 +37,11 @@ class AggregatorServiceKtTests {
             mockOfferService,
             mockSellerService,
             mockReviewService,
+            mockProductCatalogServiceKt,
             mockProductDescriptionServiceKt,
+            mockOfferServiceKt,
+            mockSellerServiceKt,
+            mockReviewServiceKt,
             true
         )
     }
@@ -43,12 +51,14 @@ class AggregatorServiceKtTests {
     fun givenAllValidData_ThenReturnsProductSummary() {
         every { mockProductCatalogService.getProductCatalog(any()) } returns Optional.of(ProductCatalog("1", "razor x1"))
         every { mockProductDescriptionServiceKt.getProductDescriptionJavaCall(any()) } returns CompletableFuture.supplyAsync { Optional.of(ProductDescription("1", "this is a razor x1", 1.5, "silver")) }
-        every { mockOfferService.getProductOffers(any()) } returns listOf(
+        every { mockOfferServiceKt.getProductOffersForJavaCall(any()) } returns CompletableFuture.supplyAsync{
+            listOf(
                     ProductOffer("1", 20.0, "s-1"),
                     ProductOffer("2", 19.9, "s-2")
-                )
-        every { mockSellerService.getSeller("s-1") } returns Optional.of(Seller("s-1", "expensive seller"))
-        every { mockSellerService.getSeller("s-2") } returns Optional.of(Seller("s-2", "just a seller"))
+            )
+        }
+        every { mockSellerServiceKt.getSellerForJavaCall("s-1") } returns CompletableFuture.supplyAsync { Optional.of(Seller("s-1", "expensive seller")) }
+        every { mockSellerServiceKt.getSellerForJavaCall("s-2") } returns CompletableFuture.supplyAsync { Optional.of(Seller("s-2", "just a seller")) }
         every { mockReviewService.getReviews(any()) }  returns listOf(
                     ProductReview("1", "anonymous", "that is awesome", 5),
                     ProductReview("2", "mr. A", "that is ok", 3)
@@ -83,8 +93,8 @@ class AggregatorServiceKtTests {
     fun givenOnlyValidProductCatalogAndOfferPriceData_ThenReturnsProductSummary() {
         every { mockProductCatalogService.getProductCatalog(any()) } returns Optional.of(ProductCatalog("1", "razor x1"))
         every { mockProductDescriptionServiceKt.getProductDescriptionJavaCall(any()) } returns CompletableFuture.supplyAsync { Optional.empty() }
-        every { mockOfferService.getProductOffers(any()) } returns listOf(ProductOffer("1", 20.0, "s-1"))
-        every { mockSellerService.getSeller("s-1") } returns Optional.empty()
+        every { mockOfferServiceKt.getProductOffersForJavaCall(any()) } returns  CompletableFuture.supplyAsync{ listOf(ProductOffer("1", 20.0, "s-1")) }
+        every { mockSellerServiceKt.getSellerForJavaCall("s-1") } returns CompletableFuture.supplyAsync{ Optional.empty() }
         every { mockReviewService.getReviews(any()) } returns emptyList()
 
         val productSummary = aggregatorService.getProductSummary("1")
