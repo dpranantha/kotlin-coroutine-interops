@@ -24,8 +24,8 @@ class CoroutineInteropsIT {
     void testExistsProduct_thenReceived_200_Response() {
         final ProductSummary productSummary = when().request("GET", "/v1/products/1")
                 .then()
-                .time(greaterThan(1400L), TimeUnit.MILLISECONDS)  //change 6 call x 200ms (1 concurrent) + with overhead >= 300ms
-                .time(lessThan(1600L), TimeUnit.MILLISECONDS)
+                .time(greaterThan(1200L), TimeUnit.MILLISECONDS)  //change 6 call x 200ms (4 concurrent) + with overhead >= 300ms
+                .time(lessThan(1400L), TimeUnit.MILLISECONDS)
                 .assertThat()
                 .statusCode(200)
                 .extract()

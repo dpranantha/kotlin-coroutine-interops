@@ -8,9 +8,9 @@ import com.dpranantha.coroutineinterops.cache.model.Seller
 import com.dpranantha.coroutineinterops.controller.exception.ProductNotFoundException
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -49,7 +49,7 @@ class AggregatorServiceKtTests {
     @Test
     @Throws(ProductNotFoundException::class)
     fun givenAllValidData_ThenReturnsProductSummary() {
-        every { mockProductCatalogService.getProductCatalog(any()) } returns Optional.of(ProductCatalog("1", "razor x1"))
+        every { mockProductCatalogServiceKt.getProductCatalogJavaCall(any()) } returns CompletableFuture.supplyAsync { Optional.of(ProductCatalog("1", "razor x1")) }
         every { mockProductDescriptionServiceKt.getProductDescriptionJavaCall(any()) } returns CompletableFuture.supplyAsync { Optional.of(ProductDescription("1", "this is a razor x1", 1.5, "silver")) }
         every { mockOfferServiceKt.getProductOffersForJavaCall(any()) } returns CompletableFuture.supplyAsync{
             listOf(
@@ -59,11 +59,12 @@ class AggregatorServiceKtTests {
         }
         every { mockSellerServiceKt.getSellerForJavaCall("s-1") } returns CompletableFuture.supplyAsync { Optional.of(Seller("s-1", "expensive seller")) }
         every { mockSellerServiceKt.getSellerForJavaCall("s-2") } returns CompletableFuture.supplyAsync { Optional.of(Seller("s-2", "just a seller")) }
-        every { mockReviewService.getReviews(any()) }  returns listOf(
-                    ProductReview("1", "anonymous", "that is awesome", 5),
-                    ProductReview("2", "mr. A", "that is ok", 3)
-                )
-
+        every { mockReviewServiceKt.getProductReviewsForJavaCall(any()) }  returns  CompletableFuture.supplyAsync {
+            listOf(
+                ProductReview("1", "anonymous", "that is awesome", 5),
+                ProductReview("2", "mr. A", "that is ok", 3)
+            )
+        }
         val productSummary = aggregatorService.getProductSummary("1")
 
         Assertions.assertEquals("razor x1", productSummary.productName)
@@ -83,7 +84,7 @@ class AggregatorServiceKtTests {
     @Test
     @Throws(ProductNotFoundException::class)
     fun givenNotFoundProduct_ThrowsException() {
-        every { mockProductCatalogService.getProductCatalog(any()) } returns Optional.empty()
+        every { mockProductCatalogServiceKt.getProductCatalogJavaCall(any()) } returns CompletableFuture.supplyAsync { Optional.empty() }
 
         Assertions.assertThrows(ProductNotFoundException::class.java) { aggregatorService.getProductSummary("1") }
     }
@@ -91,11 +92,11 @@ class AggregatorServiceKtTests {
     @Test
     @Throws(ProductNotFoundException::class)
     fun givenOnlyValidProductCatalogAndOfferPriceData_ThenReturnsProductSummary() {
-        every { mockProductCatalogService.getProductCatalog(any()) } returns Optional.of(ProductCatalog("1", "razor x1"))
+        every { mockProductCatalogServiceKt.getProductCatalogJavaCall(any()) } returns CompletableFuture.supplyAsync { Optional.of(ProductCatalog("1", "razor x1")) }
         every { mockProductDescriptionServiceKt.getProductDescriptionJavaCall(any()) } returns CompletableFuture.supplyAsync { Optional.empty() }
         every { mockOfferServiceKt.getProductOffersForJavaCall(any()) } returns  CompletableFuture.supplyAsync{ listOf(ProductOffer("1", 20.0, "s-1")) }
         every { mockSellerServiceKt.getSellerForJavaCall("s-1") } returns CompletableFuture.supplyAsync{ Optional.empty() }
-        every { mockReviewService.getReviews(any()) } returns emptyList()
+        every { mockReviewServiceKt.getProductReviewsForJavaCall(any()) } returns CompletableFuture.supplyAsync { emptyList() }
 
         val productSummary = aggregatorService.getProductSummary("1")
 

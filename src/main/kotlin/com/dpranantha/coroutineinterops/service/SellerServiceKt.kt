@@ -1,7 +1,6 @@
 package com.dpranantha.coroutineinterops.service
 
 import com.dpranantha.coroutineinterops.adapter.DataProvider
-import com.dpranantha.coroutineinterops.cache.model.ProductReviews
 import com.dpranantha.coroutineinterops.cache.model.Seller
 import com.dpranantha.coroutineinterops.lib.unwrap
 import com.dpranantha.coroutineinterops.lib.wrap
