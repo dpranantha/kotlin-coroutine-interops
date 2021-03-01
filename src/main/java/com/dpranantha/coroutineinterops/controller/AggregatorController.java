@@ -4,6 +4,7 @@ import com.dpranantha.coroutineinterops.controller.exception.ErrorMessage;
 import com.dpranantha.coroutineinterops.controller.exception.ProductNotFoundException;
 import com.dpranantha.coroutineinterops.model.ProductSummary;
 import com.dpranantha.coroutineinterops.service.AggregatorService;
+import com.dpranantha.coroutineinterops.service.AggregatorServiceKt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +28,16 @@ public class AggregatorController {
     private static final Logger logger = LoggerFactory.getLogger(AggregatorController.class);
 
     private final AggregatorService aggregatorService;
+    private final AggregatorServiceKt aggregatorServiceKt;
+    private final boolean useKotlin;
 
     @Autowired
-    public AggregatorController(AggregatorService aggregatorService) {
+    public AggregatorController(AggregatorService aggregatorService,
+                                AggregatorServiceKt aggregatorServiceKt,
+                                @Value("${use.kotlin:false}") boolean useKotlin) {
         this.aggregatorService = aggregatorService;
+        this.aggregatorServiceKt = aggregatorServiceKt;
+        this.useKotlin = useKotlin;
     }
 
     @Operation(summary = "Get a product by its id")
@@ -46,7 +54,7 @@ public class AggregatorController {
     @GetMapping("/{id}")
     public ProductSummary getProductById(@PathVariable("id") final String id) throws ProductNotFoundException {
         Instant start = Instant.now();
-        final ProductSummary productSummary = aggregatorService.getProductSummary(id);
+        final ProductSummary productSummary = useKotlin ? aggregatorServiceKt.getProductSummaryForJavaCall(id).join() : aggregatorService.getProductSummary(id);
         Instant finish = Instant.now();
         logger.info("Processing time: {} ms", Duration.between(start, finish).toMillis());
         return productSummary;

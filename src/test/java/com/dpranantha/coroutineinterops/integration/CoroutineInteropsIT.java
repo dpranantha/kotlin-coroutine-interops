@@ -17,15 +17,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {CoroutineInteropsApplication.class},
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        properties = { "use.kotlin=false" } )
+        properties = { "use.kotlin=true" } )
 class CoroutineInteropsIT {
 
+    //Note: execution via mvn clean verify -Pintegration has some overhead
     @Test
     void testExistsProduct_thenReceived_200_Response() {
         final ProductSummary productSummary = when().request("GET", "/v1/products/1")
                 .then()
                 .time(greaterThan(1200L), TimeUnit.MILLISECONDS)  //change 6 call x 200ms (4 concurrent) + with overhead >= 300ms
-                .time(lessThan(1400L), TimeUnit.MILLISECONDS)
+                .time(lessThan(1500L), TimeUnit.MILLISECONDS)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -48,6 +49,7 @@ class CoroutineInteropsIT {
         assertEquals(4.0, productSummary.getRating());
     }
 
+    //Note: execution via mvn clean verify -Pintegration has some overhead
     @Test
     void testNotExistsProduct_thenReceived_404_Response() {
         when().request("GET", "/v1/products/1100")

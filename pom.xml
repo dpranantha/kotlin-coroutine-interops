@@ -228,6 +228,9 @@
                 <configuration>
                     <!-- https://maven.apache.org/surefire/maven-failsafe-plugin/examples/class-loading.html -->
                     <useSystemClassLoader>false</useSystemClassLoader>
+                    <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                     <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                     <includes>
                         <include>${integration-test.pattern}</include>
